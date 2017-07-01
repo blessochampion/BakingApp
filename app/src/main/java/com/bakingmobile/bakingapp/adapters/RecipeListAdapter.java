@@ -32,7 +32,6 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_list_item, parent, false);
-g
         return new ViewHolder( applicationContext, view);
     }
 
@@ -65,7 +64,9 @@ g
 
         public void bindView(Recipe recipe) {
             mName.setText(recipe.getName());
-            mServings.setText(recipe.getServings());
+            String servings = context.getString(R.string.servings) +" "+ recipe.getServings();
+            mServings.setText(servings);
+
             if (recipe.hasImage()) {
                 ImageUtils.loadImageFromRemoteServerIntoImageView(
                         context, recipe.getImageURL(), mImageView
