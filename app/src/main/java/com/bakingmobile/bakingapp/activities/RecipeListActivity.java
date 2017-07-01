@@ -1,5 +1,6 @@
 package com.bakingmobile.bakingapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,16 +22,18 @@ import com.bakingmobile.bakingapp.utils.RecipeParser;
 
 import org.json.JSONArray;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class RecipeListActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONArray> {
+public class RecipeListActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONArray>,RecipeListAdapter.RecipeItemTouchListener {
     private RecyclerView mRecipeListRecyclerView;
     private RecipeListAdapter mRecipeListAdapater;
     private JsonArrayRequest mArrayRequest;
-    private List<Recipe> mRecipeList;
+    private ArrayList<Recipe> mRecipeList;
 
     TextView mErrorMessageTextView;
     ProgressBar mLoadingIndicator;
+
+    private static final String KEY_RECIPES = "recipes";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,20 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecipeListRecyclerView.setLayoutManager(linearLayoutManager);
-        makeNetworkRequestForRecipes();
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPES)) {
+            mRecipeList = savedInstanceState.getParcelableArrayList(KEY_RECIPES);
+            showRecipe();
+
+        } else {
+            boolean userIsConnectedToTheInternet = NetworkUtils.isNetworkAvailable(getApplicationContext());
+
+            if(!userIsConnectedToTheInternet) {
+                showError(getString(R.string.no_internet_connection_error_message));
+            }else {
+                makeNetworkRequestForRecipes();
+            }
+        }
 
     }
 
@@ -60,6 +76,15 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
 
         AppController.getInstance().addToRequestQueue(mArrayRequest);
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        boolean dataIsAvailable = mRecipeList != null;
+        if (dataIsAvailable) {
+            outState.putParcelableArrayList(KEY_RECIPES, mRecipeList);
+        }
     }
 
     private void showError(String errorMessage){
@@ -81,16 +106,19 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
     @Override
     public void onResponse(JSONArray response) {
 
-
-
         mRecipeList = RecipeParser.parseRecipe(response);
         mLoadingIndicator.setVisibility(View.GONE);
         mErrorMessageTextView.setVisibility(View.GONE);
         mRecipeListRecyclerView.setVisibility(View.VISIBLE);
+        showRecipe();
+
+
+    }
+
+    private void showRecipe() {
         mRecipeListAdapater = new RecipeListAdapter(getApplicationContext(), mRecipeList);
+        mRecipeListAdapater.setRecipeOnTouchListener(this);
         mRecipeListRecyclerView.setAdapter(mRecipeListAdapater);
-
-
     }
 
     @Override
@@ -100,5 +128,10 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
     }
 
 
-
+    @Override
+    public void onRecipeItemTouched(Recipe touchedRecipe) {
+        Intent intent = new Intent(RecipeListActivity.this, RecipeDetailsActivity.class);
+        intent.putExtra(RecipeDetailsActivity.KEY_RECIPE, touchedRecipe);
+        startActivity(intent);
+    }
 }

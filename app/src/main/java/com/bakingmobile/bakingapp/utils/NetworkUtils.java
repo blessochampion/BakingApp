@@ -1,5 +1,9 @@
 package com.bakingmobile.bakingapp.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 /**
  * Created by blessochampion on 7/1/17.
  */
@@ -11,5 +15,12 @@ public class NetworkUtils
     public static String getRecipeListUrl(){
 
         return recipeListFragment;
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

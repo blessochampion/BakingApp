@@ -22,6 +22,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
 
     private List<Recipe> recipes;
     private Context applicationContext;
+    private RecipeItemTouchListener listener;
 
     public RecipeListAdapter(Context context, List<Recipe> recipes) {
         this.recipes = recipes;
@@ -29,10 +30,18 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
 
     }
 
+    public void setRecipeOnTouchListener(RecipeItemTouchListener recipeOnTouchListener) {
+        listener = recipeOnTouchListener;
+    }
+
+    public static interface RecipeItemTouchListener {
+        public void onRecipeItemTouched(Recipe touchedRecipe);
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_list_item, parent, false);
-        return new ViewHolder( applicationContext, view);
+        return new ViewHolder(applicationContext, view, listener);
     }
 
     @Override
@@ -51,18 +60,22 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         TextView mServings;
         ImageView mImageView;
         Context context;
+        RecipeItemTouchListener mTouchListener;
+        View mItemView;
 
-        public ViewHolder(Context context, View itemView) {
-
+        public ViewHolder(Context context, View itemView, RecipeItemTouchListener listener) {
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tv_name);
             mServings = (TextView)  itemView.findViewById(R.id.tv_servings);
             mImageView = (ImageView) itemView.findViewById(R.id.iv_recipe_image);
             this.context = context;
+            mTouchListener = listener;
+            mItemView = itemView;
+
 
         }
 
-        public void bindView(Recipe recipe) {
+        public void bindView(final Recipe recipe) {
             mName.setText(recipe.getName());
             String servings = context.getString(R.string.servings) +" "+ recipe.getServings();
             mServings.setText(servings);
@@ -77,6 +90,14 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
                         context, R.drawable.recipe_image, mImageView
                 );
             }
+
+            mItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTouchListener != null)
+                        mTouchListener.onRecipeItemTouched(recipe);
+                }
+            });
         }
 
 

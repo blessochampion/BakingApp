@@ -39,15 +39,15 @@ public class RecipeParser {
 
     private static String LOG_TAG = RecipeParser.class.getSimpleName();
 
-    public static List<Recipe> parseRecipe(JSONArray jsonArray) {
+    public static ArrayList<Recipe> parseRecipe(JSONArray jsonArray) {
         JSONObject recipeJSON;
-        List<Recipe> recipeList = new ArrayList<>();
+        ArrayList<Recipe> recipeList = new ArrayList<>();
 
 
         int id;
         String name;
-        List<Ingredient> ingredients;
-        List<Step> steps;
+        ArrayList<Ingredient> ingredients;
+        ArrayList<Step> steps;
         int servings;
         String imageURL;
         Recipe recipe;
@@ -74,8 +74,8 @@ public class RecipeParser {
 
     }
 
-    private static List<Ingredient> parseIngredient(JSONArray ingredientListJSON) throws JSONException {
-        List<Ingredient> ingredients = new ArrayList<>();
+    private static ArrayList<Ingredient> parseIngredient(JSONArray ingredientListJSON) throws JSONException {
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
         Ingredient recipeIngredient;
         JSONObject ingredientJSON;
 
@@ -98,9 +98,9 @@ public class RecipeParser {
 
     }
 
-    private static List<Step> parseStep(JSONArray stepListJSON) throws JSONException {
+    private static ArrayList<Step> parseStep(JSONArray stepListJSON) throws JSONException {
 
-        List<Step> steps = new ArrayList<>();
+        ArrayList<Step> steps = new ArrayList<>();
         Step recipeStep;
         JSONObject stepJSON;
 
