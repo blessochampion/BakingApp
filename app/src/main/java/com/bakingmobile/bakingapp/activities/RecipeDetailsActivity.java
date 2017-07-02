@@ -8,37 +8,34 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 import com.bakingmobile.bakingapp.R;
 import com.bakingmobile.bakingapp.adapters.RecipeListDetailsAdapter;
+import com.bakingmobile.bakingapp.fragments.RecipeDetailsFragment;
 import com.bakingmobile.bakingapp.models.Ingredient;
 import com.bakingmobile.bakingapp.models.Recipe;
 import com.bakingmobile.bakingapp.models.Step;
 
 import java.util.ArrayList;
 
-public class RecipeDetailsActivity extends AppCompatActivity implements RecipeListDetailsAdapter.RecipeStepItemTouchListener {
+public class RecipeDetailsActivity extends AppCompatActivity{
 
     public static final String KEY_RECIPE = "recipe";
     Recipe mRecipe;
 
-    private RecyclerView mRecipeListSteps;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
 
-        mRecipeListSteps = (RecyclerView) findViewById(R.id.rv_recipe_list_steps);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mRecipeListSteps.setLayoutManager(linearLayoutManager);
-
-
         //get references to views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRecipeListSteps = (RecyclerView) findViewById(R.id.rv_recipe_list_steps);
+
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPE)) {
             mRecipe = savedInstanceState.getParcelable(KEY_RECIPE);
@@ -56,19 +53,21 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
         getSupportActionBar().setTitle(mRecipe.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        showRecipeDetails();
+
+        showRecipeIngredientAndSteps();
 
     }
 
-    private void showRecipeDetails() {
-        ArrayList<Ingredient> ingredients = mRecipe.getIngredients();
-        ArrayList<Step> steps =  mRecipe.getSteps();
-        Context appContext = getApplicationContext();
+    private void showRecipeIngredientAndSteps() {
 
-        RecipeListDetailsAdapter recipeStepsAdapter = new RecipeListDetailsAdapter(appContext, ingredients, steps);
-        recipeStepsAdapter.setRecipeStepOnTouchListener(this);
-        mRecipeListSteps.setAdapter(recipeStepsAdapter);
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.fl_recipe_details_container,
+                RecipeDetailsFragment.getNewInstance(mRecipe),
+                null
+        ).commit();
+
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -88,11 +87,4 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
     }
 
 
-    @Override
-    public void onRecipeStepItemTouched(int position) {
-        Intent intent = new Intent(RecipeDetailsActivity.this, RecipeStepsActivity.class);
-        intent.putExtra(RecipeStepsActivity.KEY_STEPS, mRecipe.getSteps());
-        intent.putExtra(RecipeStepsActivity.KEY_POSITION, position);
-        startActivity(intent);
-    }
 }
