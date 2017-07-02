@@ -24,8 +24,10 @@ public class RecipeStepsActivity extends AppCompatActivity {
     TabLayout mTabLayout;
     ViewPager mViewPager;
     ArrayList<Step> mSteps;
+    int position = 0;
 
     public static final String KEY_STEPS = "steps";
+    public static final String KEY_POSITION = "position";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class RecipeStepsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent.hasExtra(KEY_STEPS)){
             mSteps = intent.getParcelableArrayListExtra(KEY_STEPS);
+            position = intent.getIntExtra(KEY_POSITION, 0);
+
         }else {
             finish();
         }
@@ -75,6 +79,7 @@ public class RecipeStepsActivity extends AppCompatActivity {
         RecipeStepsFragmentAdapter adapter = new RecipeStepsFragmentAdapter(getApplicationContext(),
                 supportFragmentManager,mSteps );
         mViewPager.setAdapter(adapter);
+        mViewPager.setCurrentItem(position);
     }
 
 }

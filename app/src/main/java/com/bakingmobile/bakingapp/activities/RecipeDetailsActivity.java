@@ -89,9 +89,10 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
 
 
     @Override
-    public void onRecipeStepItemTouched(Step touchedRecipeStep) {
+    public void onRecipeStepItemTouched(int position) {
         Intent intent = new Intent(RecipeDetailsActivity.this, RecipeStepsActivity.class);
         intent.putExtra(RecipeStepsActivity.KEY_STEPS, mRecipe.getSteps());
+        intent.putExtra(RecipeStepsActivity.KEY_POSITION, position);
         startActivity(intent);
     }
 }

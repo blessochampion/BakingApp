@@ -7,11 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bakingmobile.bakingapp.R;
 import com.bakingmobile.bakingapp.models.Ingredient;
 import com.bakingmobile.bakingapp.models.Step;
+import com.bakingmobile.bakingapp.utils.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class RecipeListDetailsAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int INGREDIENT_POSITION = 0;
 
     public static interface RecipeStepItemTouchListener {
-        void onRecipeStepItemTouched(Step touchedRecipeStep);
+        void onRecipeStepItemTouched(int position);
     }
 
 
@@ -88,6 +90,7 @@ public class RecipeListDetailsAdapter extends RecyclerView.Adapter<RecyclerView.
         RecipeStepItemTouchListener mTouchListener;
         View mItemView;
         View mDivider;
+        ImageView mPlayIcon;
 
         public StepViewHolder(Context context, View itemView, RecipeStepItemTouchListener listener) {
             super(itemView);
@@ -96,32 +99,25 @@ public class RecipeListDetailsAdapter extends RecyclerView.Adapter<RecyclerView.
             mItemView = itemView;
             mShortDescription = (TextView) itemView.findViewById(R.id.tv_recipe_step_short_description);
             mDivider = itemView.findViewById(R.id.v_divider);
+            mPlayIcon = (ImageView) itemView.findViewById(R.id.iv_play_icon);
 
 
         }
 
-        public void bindView(final Step step, int position) {
+        public void bindView(final Step step, final int position) {
             String stepDescription = position +".  " + step.getShortDescription();
             mShortDescription.setText(stepDescription);
 
-            /*todo set image/video icon or description that shows there is no message*/
-
-           /* if (recipe.hasImage()) {
-                ImageUtils.loadImageFromRemoteServerIntoImageView(
-                        context, recipe.getImageURL(), mImageView
-                );
-
-            } else {
-                ImageUtils.loadImageFromResourcesToImageView(
-                        context, R.drawable.recipe_image, mImageView
-                );
-            }*/
+            if(step.hasVideo()){
+                mPlayIcon.setVisibility(View.VISIBLE);
+                ImageUtils.loadImageFromResourcesToImageView(context, R.drawable.youtube, mPlayIcon);
+            }
 
             mItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTouchListener != null)
-                        mTouchListener.onRecipeStepItemTouched(step);
+                        mTouchListener.onRecipeStepItemTouched(position);
                 }
             });
 
