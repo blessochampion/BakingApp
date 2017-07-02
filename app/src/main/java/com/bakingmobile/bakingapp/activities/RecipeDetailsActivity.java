@@ -40,21 +40,23 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
 
         mRecipeListSteps = (RecyclerView) findViewById(R.id.rv_recipe_list_steps);
 
-        Intent intentThatStartedThisActivity = getIntent();
-        if(intentThatStartedThisActivity.hasExtra(KEY_RECIPE)){
-            mRecipe = intentThatStartedThisActivity.getParcelableExtra(KEY_RECIPE);
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPE)) {
+            mRecipe = savedInstanceState.getParcelable(KEY_RECIPE);
+        } else {
 
-            getSupportActionBar().setTitle(mRecipe.getName());
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            showRecipeDetails();
+            Intent intentThatStartedThisActivity = getIntent();
+            if (intentThatStartedThisActivity.hasExtra(KEY_RECIPE)) {
+                mRecipe = intentThatStartedThisActivity.getParcelableExtra(KEY_RECIPE);
 
-        }else{
-            finish();
+            } else {
+                finish();
+            }
         }
 
-
-
+        getSupportActionBar().setTitle(mRecipe.getName());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        showRecipeDetails();
 
     }
 
@@ -66,8 +68,14 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
         RecipeListDetailsAdapter recipeStepsAdapter = new RecipeListDetailsAdapter(appContext, ingredients, steps);
         recipeStepsAdapter.setRecipeStepOnTouchListener(this);
         mRecipeListSteps.setAdapter(recipeStepsAdapter);
+    }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mRecipe != null) {
+            outState.putParcelable(KEY_RECIPE, mRecipe);
+        }
     }
 
     @Override
@@ -82,6 +90,8 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeLi
 
     @Override
     public void onRecipeStepItemTouched(Step touchedRecipeStep) {
-        /*todo start another activity*/
+        Intent intent = new Intent(RecipeDetailsActivity.this, RecipeStepsActivity.class);
+        intent.putExtra(RecipeStepsActivity.KEY_STEPS, mRecipe.getSteps());
+        startActivity(intent);
     }
 }
