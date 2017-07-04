@@ -150,4 +150,8 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
         intent.putExtra(RecipeDetailsActivity.KEY_RECIPE, touchedRecipe);
         startActivity(intent);
     }
+
+    public boolean isSyncFinished(){
+        return mRecipeListAdapater != null;
+    }
 }
