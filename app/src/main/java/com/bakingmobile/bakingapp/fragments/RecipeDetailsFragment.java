@@ -28,9 +28,24 @@ import java.util.ArrayList;
 public class RecipeDetailsFragment extends Fragment implements RecipeListDetailsAdapter.RecipeStepItemTouchListener {
     Recipe mRecipe;
     private RecyclerView mRecipeListSteps;
+    private FragmentDetailsStepSelectedListener listener;
+
+    public static interface FragmentDetailsStepSelectedListener {
+        public void recipeStepSelected(int position);
+    }
 
     public RecipeDetailsFragment() {
         // Required empty public constructor
+    }
+
+    public void setListener(FragmentDetailsStepSelectedListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
     }
 
     @Override
@@ -78,9 +93,14 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
 
     @Override
     public void onRecipeStepItemTouched(int position) {
-        Intent intent = new Intent(getActivity(), RecipeStepsActivity.class);
-        intent.putExtra(RecipeStepsActivity.KEY_STEPS, mRecipe.getSteps());
-        intent.putExtra(RecipeStepsActivity.KEY_POSITION, position);
-        startActivity(intent);
+        boolean isTablet = listener != null;
+        if(isTablet){
+         listener.recipeStepSelected(position);
+        }else {
+            Intent intent = new Intent(getActivity(), RecipeStepsActivity.class);
+            intent.putExtra(RecipeStepsActivity.KEY_STEPS, mRecipe.getSteps());
+            intent.putExtra(RecipeStepsActivity.KEY_POSITION, position);
+            startActivity(intent);
+        }
     }
 }

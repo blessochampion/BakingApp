@@ -1,8 +1,10 @@
 package com.bakingmobile.bakingapp.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -45,8 +47,6 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
         mErrorMessageTextView = (TextView) findViewById(R.id.tv_error_message);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mRecipeListRecyclerView.setLayoutManager(linearLayoutManager);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPES)) {
             mRecipeList = savedInstanceState.getParcelableArrayList(KEY_RECIPES);
@@ -116,9 +116,25 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
     }
 
     private void showRecipe() {
+
+
+        mRecipeListRecyclerView.setLayoutManager(getLayoutManager());
         mRecipeListAdapater = new RecipeListAdapter(getApplicationContext(), mRecipeList);
         mRecipeListAdapater.setRecipeOnTouchListener(this);
         mRecipeListRecyclerView.setAdapter(mRecipeListAdapater);
+    }
+
+    private RecyclerView.LayoutManager getLayoutManager() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        boolean isTablet = findViewById(R.id.fl_tablet_container) != null;
+        int currentOrientation = getResources().getConfiguration().orientation;
+        boolean isLandScape = currentOrientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isTablet || isLandScape) {
+            int columnSpan = 2;
+            return new GridLayoutManager(getApplicationContext(), columnSpan);
+        }
+        return  linearLayoutManager;
     }
 
     @Override
