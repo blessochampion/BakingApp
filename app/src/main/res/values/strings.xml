@@ -11,4 +11,7 @@
     <string name="ingredients">Ingredients List: </string>
     <string name="current_step">Current Step</string>
     <string name="step">Step</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_last_viewed_ingredient">Ingredients</string>
 </resources>

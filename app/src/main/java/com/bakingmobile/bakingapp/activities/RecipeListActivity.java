@@ -18,6 +18,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.bakingmobile.bakingapp.AppController;
 import com.bakingmobile.bakingapp.R;
 import com.bakingmobile.bakingapp.adapters.RecipeListAdapter;
+import com.bakingmobile.bakingapp.data.LastSelectedIngredientPreference;
+import com.bakingmobile.bakingapp.models.Ingredient;
 import com.bakingmobile.bakingapp.models.Recipe;
 import com.bakingmobile.bakingapp.utils.NetworkUtils;
 import com.bakingmobile.bakingapp.utils.RecipeParser;
@@ -25,6 +27,7 @@ import com.bakingmobile.bakingapp.utils.RecipeParser;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecipeListActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONArray>,RecipeListAdapter.RecipeItemTouchListener {
     private RecyclerView mRecipeListRecyclerView;
@@ -148,7 +151,28 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
     public void onRecipeItemTouched(Recipe touchedRecipe) {
         Intent intent = new Intent(RecipeListActivity.this, RecipeDetailsActivity.class);
         intent.putExtra(RecipeDetailsActivity.KEY_RECIPE, touchedRecipe);
+        saveTouchedRecipeIngredient(touchedRecipe.getIngredients());
         startActivity(intent);
+    }
+
+    private void saveTouchedRecipeIngredient(List<Ingredient> ingredients){
+        String formattedIngredient;
+        int quantity;
+        String measure;
+        String ingredientDetails;
+        String finalFormattedString = "";
+
+        for (Ingredient ingredient : ingredients){
+            formattedIngredient  = this.getApplicationContext().getString(R.string.bullet);
+            quantity = ingredient.getQuantity();
+            measure = ingredient.getMeasure();
+            ingredientDetails = ingredient.getIngredient();
+            formattedIngredient += " " + ingredientDetails + " ("+ quantity +" " + measure + ")";
+            finalFormattedString += formattedIngredient+ "\n\n";
+
+        }
+
+        LastSelectedIngredientPreference.setIngredientPreference(this.getApplicationContext(), finalFormattedString);
     }
 
     public boolean isSyncFinished(){
