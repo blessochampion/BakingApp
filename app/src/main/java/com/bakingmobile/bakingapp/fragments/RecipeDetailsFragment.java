@@ -29,6 +29,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
     Recipe mRecipe;
     private RecyclerView mRecipeListSteps;
     private FragmentDetailsStepSelectedListener listener;
+    private static final String KEY_POSITION = "position";
+    private static final String KEY_RECIPE = "recipe";
+    LinearLayoutManager linearLayoutManager;
 
     public static interface FragmentDetailsStepSelectedListener {
         public void recipeStepSelected(int position);
@@ -58,15 +61,31 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(linearLayoutManager != null && mRecipe != null){
+            outState.putParcelable(KEY_POSITION, linearLayoutManager.onSaveInstanceState());
+            outState.putParcelable(KEY_RECIPE, mRecipe);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_recipe_details, container, false);
         mRecipeListSteps = (RecyclerView) rootView.findViewById(R.id.rv_recipe_list_steps);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+
+        if(savedInstanceState != null){
+            mRecipe = savedInstanceState.getParcelable(KEY_RECIPE);
+            showRecipeDetails();
+            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(KEY_POSITION));
+            mRecipeListSteps.setLayoutManager(linearLayoutManager);
+            return rootView;
+        }
         mRecipeListSteps.setLayoutManager(linearLayoutManager);
         showRecipeDetails();
-
         return rootView;
     }
 

@@ -42,28 +42,27 @@ public class RecipeDetailsActivity extends AppCompatActivity{
             Intent intentThatStartedThisActivity = getIntent();
             if (intentThatStartedThisActivity.hasExtra(KEY_RECIPE)) {
                 mRecipe = intentThatStartedThisActivity.getParcelableExtra(KEY_RECIPE);
+                showRecipeDetailsFragment();
 
             } else {
                 finish();
             }
+
         }
 
         getSupportActionBar().setTitle(mRecipe.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        showRecipeIngredientAndSteps();
+        showRecipeSteps();
 
     }
 
-    private void showRecipeIngredientAndSteps() {
 
-        RecipeDetailsFragment recipeDetailsFragment = RecipeDetailsFragment.getNewInstance(mRecipe);
-        getSupportFragmentManager().beginTransaction().replace(
-                R.id.fl_recipe_details_container,
-                recipeDetailsFragment,
-                null
-        ).commit();
+
+    private void showRecipeSteps() {
+
+        RecipeDetailsFragment recipeDetailsFragment = showRecipeDetailsFragment();
 
         isTablet = findViewById(R.id.fl_recipe_details_container_step) != null;
 
@@ -81,6 +80,16 @@ public class RecipeDetailsActivity extends AppCompatActivity{
 
         }
 
+    }
+
+    private RecipeDetailsFragment showRecipeDetailsFragment() {
+        RecipeDetailsFragment recipeDetailsFragment = RecipeDetailsFragment.getNewInstance(mRecipe);
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.fl_recipe_details_container,
+                recipeDetailsFragment,
+                null
+        ).commit();
+        return recipeDetailsFragment;
     }
 
     private void showStepFragment() {
