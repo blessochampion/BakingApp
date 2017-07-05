@@ -12,38 +12,33 @@ import com.bakingmobile.bakingapp.fragments.RecipeStepFragment;
 import com.bakingmobile.bakingapp.models.Recipe;
 import com.bakingmobile.bakingapp.models.Step;
 
-public class RecipeDetailsActivity extends AppCompatActivity{
-
+public class RecipeDetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.FragmentDetailsStepSelectedListener{
     public static final String KEY_RECIPE = "recipe";
     public static final String KEY_POSITION = "position";
     Recipe mRecipe;
-
     private int mSelectedStepPosition = 0;
     private boolean isTablet = false;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
-
         //get references to views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RECIPE)) {
             mRecipe = savedInstanceState.getParcelable(KEY_RECIPE);
             mSelectedStepPosition = savedInstanceState.getInt(KEY_POSITION);
+            getSupportActionBar().setTitle(mRecipe.getName());
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            showRecipeSteps();
+            return;
         } else {
-
             Intent intentThatStartedThisActivity = getIntent();
             if (intentThatStartedThisActivity.hasExtra(KEY_RECIPE)) {
                 mRecipe = intentThatStartedThisActivity.getParcelableExtra(KEY_RECIPE);
-                showRecipeDetailsFragment();
-
             } else {
                 finish();
             }
@@ -53,49 +48,32 @@ public class RecipeDetailsActivity extends AppCompatActivity{
         getSupportActionBar().setTitle(mRecipe.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        showRecipeSteps();
-
+        showRecipeDetailsFragment();
     }
 
 
 
     private void showRecipeSteps() {
-
-        RecipeDetailsFragment recipeDetailsFragment = showRecipeDetailsFragment();
-
         isTablet = findViewById(R.id.fl_recipe_details_container_step) != null;
-
         if (isTablet) {
             showStepFragment();
-
-            recipeDetailsFragment.setListener(new RecipeDetailsFragment.FragmentDetailsStepSelectedListener() {
-                @Override
-                public void recipeStepSelected(int position) {
-                    mSelectedStepPosition = position;
-                    showStepFragment();
-
-                }
-            });
-
         }
 
     }
 
-    private RecipeDetailsFragment showRecipeDetailsFragment() {
+    private void showRecipeDetailsFragment() {
         RecipeDetailsFragment recipeDetailsFragment = RecipeDetailsFragment.getNewInstance(mRecipe);
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fl_recipe_details_container,
                 recipeDetailsFragment,
                 null
         ).commit();
-        return recipeDetailsFragment;
+        showRecipeSteps();
     }
 
     private void showStepFragment() {
         Step currentStep = mRecipe.getSteps().get(mSelectedStepPosition);
         RecipeStepFragment fragment = RecipeStepFragment.getNewInstance(currentStep);
-
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.fl_recipe_details_container_step,
                 fragment
@@ -124,4 +102,14 @@ public class RecipeDetailsActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    public void recipeStepSelected(int position) {
+        mSelectedStepPosition = position;
+        showStepFragment();
+    }
+
+    @Override
+    public boolean isReadToListen() {
+        return isTablet;
+    }
 }

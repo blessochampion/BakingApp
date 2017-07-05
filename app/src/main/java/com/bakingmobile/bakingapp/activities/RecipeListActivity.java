@@ -108,7 +108,6 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
 
     @Override
     public void onResponse(JSONArray response) {
-
         mRecipeList = RecipeParser.parseRecipe(response);
         mLoadingIndicator.setVisibility(View.GONE);
         mErrorMessageTextView.setVisibility(View.GONE);
@@ -119,8 +118,6 @@ public class RecipeListActivity extends AppCompatActivity implements Response.Er
     }
 
     private void showRecipe() {
-
-
         mRecipeListRecyclerView.setLayoutManager(getLayoutManager());
         mRecipeListAdapater = new RecipeListAdapter(getApplicationContext(), mRecipeList);
         mRecipeListAdapater.setRecipeOnTouchListener(this);

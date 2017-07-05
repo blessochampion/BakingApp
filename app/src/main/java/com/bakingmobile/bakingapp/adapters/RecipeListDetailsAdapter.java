@@ -31,7 +31,7 @@ public class RecipeListDetailsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private static final int INGREDIENT_POSITION = 0;
 
-    public static interface RecipeStepItemTouchListener {
+    public  interface RecipeStepItemTouchListener {
         void onRecipeStepItemTouched(int position);
     }
 

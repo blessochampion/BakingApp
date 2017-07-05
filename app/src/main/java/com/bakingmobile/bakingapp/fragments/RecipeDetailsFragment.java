@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,22 +34,19 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
     private static final String KEY_RECIPE = "recipe";
     LinearLayoutManager linearLayoutManager;
 
-    public static interface FragmentDetailsStepSelectedListener {
-        public void recipeStepSelected(int position);
+    public  interface FragmentDetailsStepSelectedListener {
+         void recipeStepSelected(int position);
+        boolean isReadToListen();
     }
 
     public RecipeDetailsFragment() {
         // Required empty public constructor
     }
 
-    public void setListener(FragmentDetailsStepSelectedListener listener) {
-        this.listener = listener;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
+        this.listener = (FragmentDetailsStepSelectedListener) context;
     }
 
     @Override
@@ -66,9 +64,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
         if(linearLayoutManager != null && mRecipe != null){
             outState.putParcelable(KEY_POSITION, linearLayoutManager.onSaveInstanceState());
             outState.putParcelable(KEY_RECIPE, mRecipe);
+
         }
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,9 +77,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
 
         if(savedInstanceState != null){
             mRecipe = savedInstanceState.getParcelable(KEY_RECIPE);
-            showRecipeDetails();
             linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(KEY_POSITION));
             mRecipeListSteps.setLayoutManager(linearLayoutManager);
+            showRecipeDetails();
             return rootView;
         }
         mRecipeListSteps.setLayoutManager(linearLayoutManager);
@@ -103,7 +101,6 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
         ArrayList<Ingredient> ingredients = mRecipe.getIngredients();
         ArrayList<Step> steps = mRecipe.getSteps();
         Context appContext = getActivity().getApplicationContext();
-
         RecipeListDetailsAdapter recipeStepsAdapter = new RecipeListDetailsAdapter(appContext, ingredients, steps);
         recipeStepsAdapter.setRecipeStepOnTouchListener(this);
         mRecipeListSteps.setAdapter(recipeStepsAdapter);
@@ -112,7 +109,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeListDetails
 
     @Override
     public void onRecipeStepItemTouched(int position) {
-        boolean isTablet = listener != null;
+        boolean isTablet = listener.isReadToListen();
         if(isTablet){
          listener.recipeStepSelected(position);
         }else {
