@@ -79,4 +79,8 @@ public class Step implements Parcelable {
     public boolean hasVideo(){
         return  !getVideoURL().isEmpty();
     }
+
+    public boolean hasThumbnail() {
+        return !thumbnailURL.isEmpty();
+    }
 }

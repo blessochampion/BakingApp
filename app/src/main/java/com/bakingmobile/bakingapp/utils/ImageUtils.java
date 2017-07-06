@@ -13,10 +13,10 @@ public class ImageUtils
 {
 
     public static void loadImageFromResourcesToImageView(Context context, int resourceId, ImageView imageView){
-        Picasso.with(context).load(resourceId).fit().into(imageView);
+        Picasso.with(context).load(resourceId).into(imageView);
     }
 
     public static void loadImageFromRemoteServerIntoImageView(Context context, String imageURL, ImageView imageView){
-        Picasso.with(context).load(imageURL).fit().into(imageView);
+        Picasso.with(context).load(imageURL).into(imageView);
     }
 }

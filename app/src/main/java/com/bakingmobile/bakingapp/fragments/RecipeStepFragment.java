@@ -65,12 +65,6 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        int currentOrientation = getResources().getConfiguration().orientation;
-        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            hideSystemUi();
-        }
-
         if ((Util.SDK_INT <= 23 || player == null)) {
             initializePlayer();
         }
@@ -140,7 +134,14 @@ public class RecipeStepFragment extends Fragment {
                 Uri uri = Uri.parse(mStep.getVideoURL());
                 MediaSource mediaSource = buildMediaSource(uri);
                 player.prepare(mediaSource, true, false);
-            } else {
+
+            } else if(mStep.hasThumbnail()){
+                mPlayerView.setVisibility(View.GONE);
+                mNoVideoImageView.setVisibility(View.VISIBLE);
+                ImageUtils.loadImageFromRemoteServerIntoImageView(getActivity().getApplicationContext(),
+                        mStep.getThumbnailURL(), mNoVideoImageView);
+            }
+            else {
                 mPlayerView.setVisibility(View.GONE);
                 mNoVideoImageView.setVisibility(View.VISIBLE);
                 ImageUtils.loadImageFromResourcesToImageView(getActivity().getApplicationContext(),
@@ -192,16 +193,5 @@ public class RecipeStepFragment extends Fragment {
         return  fragment;
     }
 
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        if (mPlayerView != null) {
-            mPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    }
 
 }
